@@ -8,6 +8,7 @@ Données : **StatsBomb Open Data** (https://github.com/statsbomb/open-data), sou
 pip install pandas numpy pytest
 python scripts/etude2_cpa.py           # télécharge les événements (cache dans donnees/) et calcule
 python scripts/etude2_differences.py   # écarts entre groupes, IC 95 %
+python scripts/etude3_penalties.py     # étude 3 (lit les tirs extraits par l'étude 2)
 python -m pytest -q tests
 ```
 
@@ -25,6 +26,8 @@ python -m pytest -q tests
 - **Définition retenue, « moitié adverse »** : la remise en jeu qui ouvre la possession est jouée dans la moitié adverse (x ≥ 60 sur 120). C'est ce qu'un staff appelle une phase arrêtée offensive.
 - Variantes, pour mesurer la sensibilité à la définition : définition large (toute remise en jeu, partout), sans les touches, et fenêtre stricte (le tir est l'une des 3 premières actions avec ballon de la possession).
 - Intervalles de confiance à 95 % : bootstrap sur les matchs (1 000 tirages par compétition, 2 000 pour les écarts), parce que les tirs d'un même match ne sont pas indépendants.
+
+![Part du xG issue des phases arrêtées](visuels/etude2_phases_arretees.png)
 
 **Résultats.**
 
@@ -71,3 +74,30 @@ Fichiers : `resultats/etude2_par_competition.csv`, `resultats/etude2_differences
 - Tournois et championnats ne se comparent qu'avec prudence : peu de matchs par tournoi et niveaux d'opposition très variables.
 - Les données ouvertes ne couvrent pas toujours toutes les rencontres d'une saison (Bundesliga 2015/16 : 34 matchs).
 - Les chiffres publiés ailleurs (par exemple environ 23 % sur 12 championnats) reposent sur d'autres définitions : ils ne se comparent pas directement à ceux-ci.
+
+---
+
+## Étude 3 — Les penalties : où, de quel pied, avec quelle réussite ?
+
+![Carte des penalties](visuels/etude3_penalties.png)
+
+**Question.** Où les joueuses tirent-elles leurs penalties, de quel pied, et la réussite change-t-elle selon la zone ? Est-ce différent chez les hommes ?
+
+**Données.** Mêmes compétitions que l'étude 2 : 362 penalties féminins en match et 87 en séance de tirs au but (Coupes du monde et Euros), 410 penalties masculins en match (championnats 2015/16, sans séance).
+
+**Méthode.** Zone d'arrivée (`end_location`) : trois tiers du but en largeur, deux moitiés en hauteur, hors cadre à part. Les zones sont vues **par la gardienne** : sa droite correspond à la gauche de la tireuse. Côté naturel : la gauche de la tireuse pour une droitière, sa droite pour une gauchère. Réussite = but. Intervalles de Wilson pour les taux, de Newcombe pour les écarts. Calcul de puissance : nombre de penalties nécessaire pour détecter un écart de 5 points (test bilatéral à 5 %, puissance 80 %).
+
+**Résultats.**
+1. **Même réussite en match chez les femmes et les hommes** : 76,2 % [71,6 ; 80,3] contre 75,1 % [70,7 ; 79,1], soit un écart de +1,1 point [−5,0 ; +7,1]. **Résultat nul, et c'était attendu** : pour détecter un écart de 5 points, il faudrait environ 1 070 penalties par groupe.
+2. **La réussite chute en séance de tirs au but** : 60,9 % [50,4 ; 70,5] sur 87 penalties, soit −15,3 points [−26,6 ; −4,7] par rapport au match. Il y a aussi plus de tirs hors cadre (6,9 % contre 1,9 %).
+3. **Les joueuses tirent bas (79 %) et rarement au centre (6 %, contre 12 % chez les hommes).** La zone la plus visée est en bas, à droite de la gardienne (45 %).
+4. **Aucun écart démontré selon la zone ou le pied.** Les tirs hauts réussissent un peu plus souvent chez les femmes (+10,4 points [−0,4 ; +18,8], 77 tirs hauts), mais sans certitude. Viser le côté naturel ou le côté opposé ne change rien (+2,0 points [−6,9 ; +11,4]).
+
+Fichiers : `resultats/etude3_reussite.csv`, `etude3_zones.csv`, `etude3_cote_pied.csv`, `etude3_comparaisons.csv`.
+
+**Limites.**
+- Petit échantillon : la plupart des comparaisons ne peuvent pas trancher, et c'est le résultat lui-même.
+- Pour un tir arrêté, StatsBomb note l'endroit où la gardienne touche le ballon, pas la zone visée.
+- Les séances de tirs au but ne viennent que de tournois (Coupes du monde, Euros), les penalties en match surtout de championnats : la pression, mais aussi les tireuses, diffèrent.
+- Aucune information sur le placement ni sur le plongeon de la gardienne.
+- Comparaison masculine sur 2015/16 seulement.

@@ -89,12 +89,17 @@ def extract_shots(events: list[dict]) -> list[dict]:
             "xg": s.get("statsbomb_xg", 0.0) or 0.0,
             "rank_in_possession": rank.get(e["id"]),
             "restart_x": restart_x.get(e["possession"]),
+            # point d'arrivée du tir (x, y, z) : z = hauteur, absente pour certains tirs
+            "end_x": (s.get("end_location") or [None])[0],
+            "end_y": (s.get("end_location") or [None, None])[1],
+            "end_z": (s.get("end_location") or [None, None, None])[2] if len(s.get("end_location") or []) > 2 else None,
+            "player": e.get("player", {}).get("name"),
         })
     return out
 
 
 def shots_for_match(match_id: int) -> list[dict]:
-    path = CACHE / "shots_v3" / f"{match_id}.json"
+    path = CACHE / "shots_v4" / f"{match_id}.json"
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     ev = _get_json(f"{BASE}/events/{match_id}.json")
