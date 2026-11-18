@@ -44,6 +44,8 @@ python -m pytest -q tests
 3. **Les tournois féminins dépendent davantage des phases arrêtées que les championnats** : +4,2 points [+1,6 ; +7,0] avec la définition retenue (43,4 % contre 39,2 %), et le même sens avec les autres définitions. Coupe du monde 2023 : 46,9 % [42,1 ; 51,8].
 4. **La répartition diffère un peu.** Chez les femmes, il y a un peu plus de corners (17,1 % du xG contre 15,7 %) et de touches (13,6 % contre 11,9 %), et moins de coups francs (9,0 % contre 12,2 %). Les coups francs directs pèsent 12,5 % du xG des coups francs, contre 16,7 % chez les hommes.
 
+![La part des phases arrêtées selon la définition, femmes et hommes](visuels/etude2_definitions.png)
+
 **Par compétition (moitié adverse).**
 
 | Compétition | Matchs | Tirs | Part du xG (IC 95 %) | Fenêtre stricte | Large | Part des buts |
