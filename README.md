@@ -9,6 +9,7 @@ pip install pandas numpy pytest
 python scripts/etude2_cpa.py           # télécharge les événements (cache dans donnees/) et calcule
 python scripts/etude2_differences.py   # écarts entre groupes, IC 95 %
 python scripts/etude3_penalties.py     # étude 3 (lit les tirs extraits par l'étude 2)
+python scripts/etude1_fiabilite.py     # étude 1 (télécharge les événements complets, ~5 min)
 python -m pytest -q tests
 ```
 
@@ -101,3 +102,62 @@ Fichiers : `resultats/etude3_reussite.csv`, `etude3_zones.csv`, `etude3_cote_pie
 - Les séances de tirs au but ne viennent que de tournois (Coupes du monde, Euros), les penalties en match surtout de championnats : la pression, mais aussi les tireuses, diffèrent.
 - Aucune information sur le placement ni sur le plongeon de la gardienne.
 - Comparaison masculine sur 2015/16 seulement.
+
+---
+
+## Étude 1 — Quelles statistiques sont fiables sur une saison chez les joueuses ?
+
+![Minutes nécessaires pour qu'une statistique soit fiable](visuels/etude1_fiabilite.png)
+
+**Question.** Parmi les statistiques par 90 minutes utilisées en recrutement, lesquelles décrivent vraiment une joueuse sur une saison, et lesquelles changent au hasard d'une moitié de saison à l'autre ?
+
+**Données.** FA WSL 2018/19, 2019/20, 2020/21 et 2023/24 (487 joueuses-saisons de champ ≥ 900 min). Contrôle féminin : Frauen-Bundesliga, Liga F et Serie A Women 2023/24, NWSL 2023 (619). Comparaison masculine : Premier League 2015/16 (300), contrôle Liga 2015/16 (320). Gardiennes exclues.
+
+**Méthode.**
+- Table joueuse × match : minutes jouées (titularisation, remplacements, cartons rouges) et 24 statistiques tirées des événements.
+- Fiabilité par moitiés : les matchs de chaque joueuse sont répartis au hasard en deux moitiés. On calcule la statistique par 90 min sur chacune, puis la corrélation entre les deux moitiés sur toutes les joueuses. La formule de Spearman-Brown ramène le résultat à une saison entière. 200 tirages, médiane.
+- Lecture : ≥ 0,7 fiable ; 0,5-0,7 à utiliser avec prudence ; < 0,5 bruit.
+- **Comparaison à minutes égales** : une saison de WSL compte environ 22 matchs, contre 38 en Premier League (703 minutes par demi-saison contre 1 080). Pour comparer, la fiabilité est projetée à 1 000 minutes, et on donne les minutes nécessaires pour atteindre 0,7 (projection de Spearman-Brown).
+- Seuils testés : 600, 900 et 1 500 minutes ; détail par poste (défense, milieu, attaque).
+
+**Résultats.**
+1. **Sur une saison, 22 statistiques sur 24 sont fiables en WSL**, toutes postes confondus. Seules les interceptions (0,70, à la limite) et les contres (0,62) demandent de la prudence.
+2. **Les actions défensives demandent beaucoup plus de minutes.** Passes, conduites, pressions et tirs deviennent fiables en 160 à 330 minutes, soit 2 à 4 matchs. Tacles et récupérations demandent 900 à 1 000 minutes, fautes et interceptions 1 200 à 1 430, et les contres **2 026 minutes, plus qu'une saison complète de titulaire en WSL**.
+3. **À minutes égales, les statistiques des joueuses sont aussi fiables que celles des joueurs** : écart moyen de −0,02 à 1 000 minutes. L'écart observé sur une saison vient surtout de la longueur des saisons (22 matchs contre 38). Seule exception nette : les duels aériens, moins reproductibles en WSL (0,82 contre 0,93 à 1 000 minutes).
+4. **Poste par poste, il y a moins de statistiques fiables.** À 1 000 minutes, on compte 14 à 18 statistiques fiables sur 24 en WSL selon le poste. Le xG des défenseures est du bruit (0,48).
+
+| Statistique (WSL, tous postes) | Fiabilité sur une saison | À 1 000 min, WSL | À 1 000 min, Premier League | Minutes pour 0,7, WSL | Minutes pour 0,7, Premier League |
+|---|---|---|---|---|---|
+| Passes réussies | 0,95 | 0,93 | 0,92 | 163 | 197 |
+| Passes longues | 0,95 | 0,93 | 0,91 | 175 | 240 |
+| Passes tentées | 0,95 | 0,93 | 0,92 | 178 | 200 |
+| Dégagements | 0,93 | 0,91 | 0,93 | 230 | 186 |
+| Pertes de balle | 0,93 | 0,91 | 0,92 | 237 | 192 |
+| Conduites de balle | 0,93 | 0,90 | 0,91 | 265 | 221 |
+| Passes progressives | 0,92 | 0,89 | 0,90 | 281 | 265 |
+| Pressions | 0,92 | 0,89 | 0,88 | 292 | 324 |
+| Tirs (hors penalty) | 0,91 | 0,88 | 0,86 | 327 | 380 |
+| Centres | 0,91 | 0,88 | 0,88 | 331 | 308 |
+| Conduites progressives | 0,90 | 0,87 | 0,90 | 353 | 257 |
+| Dribbles tentés | 0,90 | 0,86 | 0,89 | 375 | 302 |
+| Passes dans la surface | 0,89 | 0,85 | 0,86 | 415 | 367 |
+| xG (hors penalty) | 0,88 | 0,84 | 0,79 | 434 | 614 |
+| Duels aériens | 0,86 | 0,82 | 0,93 | 513 | 179 |
+| Passes menant à un tir | 0,86 | 0,81 | 0,81 | 554 | 532 |
+| Duels aériens gagnés | 0,85 | 0,80 | 0,91 | 567 | 237 |
+| Dribbles réussis | 0,83 | 0,78 | 0,81 | 650 | 539 |
+| Fautes subies | 0,80 | 0,74 | 0,77 | 830 | 710 |
+| Récupérations | 0,78 | 0,72 | 0,77 | 925 | 705 |
+| Tacles | 0,77 | 0,70 | 0,77 | 983 | 697 |
+| Fautes commises | 0,73 | 0,66 | 0,65 | 1 212 | 1 280 |
+| Interceptions | 0,70 | 0,62 | 0,65 | 1 426 | 1 239 |
+| Contres | 0,62 | 0,54 | 0,48 | 2 026 | 2 536 |
+
+Fichiers : `resultats/etude1_fiabilite.csv` (tous les groupes, seuils et postes), `resultats/etude1_joueuses_matchs.csv.gz` (table joueuse × match).
+
+**Limites.**
+- « Fiable » veut dire « reproductible d'une moitié de saison à l'autre ». Une partie de cette stabilité vient de l'équipe et de son style de jeu (une joueuse d'une équipe dominante fait plus de passes), pas seulement de la joueuse.
+- Tous postes confondus, les différences entre postes gonflent la fiabilité : c'est pourquoi le détail par poste est donné.
+- Les postes sont regroupés largement (une latérale et une axiale sont toutes deux en défense).
+- La projection à 1 000 minutes suppose que la fiabilité suit la formule de Spearman-Brown.
+- Comparaison masculine sur une seule saison (2015/16).

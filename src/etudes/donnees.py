@@ -120,3 +120,23 @@ def shots_for_competition(competition_id: int, season_id: int, workers: int = 8)
         for s in shots:
             rows.append({"match_id": mid, **s})
     return rows
+
+
+def player_matches_for_match(match_id: int) -> list[dict]:
+    """Table joueuse × match d'un match (étude 1), en cache."""
+    from .fiabilite import player_match_table
+    path = CACHE / "joueuses_v1" / f"{match_id}.json"
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    rows = player_match_table(_get_json(f"{BASE}/events/{match_id}.json"))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(rows), encoding="utf-8")
+    return rows
+
+
+def player_matches_for_competition(competition_id: int, season_id: int, workers: int = 8) -> list[dict]:
+    ms = matches(competition_id, season_id)
+    ids = [m["match_id"] for m in ms]
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        per_match = list(ex.map(player_matches_for_match, ids))
+    return [{"match_id": mid, **r} for mid, rows in zip(ids, per_match) for r in rows]
